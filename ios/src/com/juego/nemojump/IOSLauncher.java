@@ -1,8 +1,8 @@
-package com.juego.superjumper;
+package com.juego.nemojump;
 
-import com.juego.superjumper.handlers.FacebookHandler;
-import com.juego.superjumper.handlers.GameServicesHandler;
-import com.juego.superjumper.handlers.RequestHandler;
+import com.juego.nemojump.handlers.FacebookHandler;
+import com.juego.nemojump.handlers.GameServicesHandler;
+import com.juego.nemojump.handlers.RequestHandler;
 import org.robovm.apple.foundation.NSAutoreleasePool;
 import org.robovm.apple.uikit.UIApplication;
 

@@ -1,4 +1,4 @@
-package com.juego.superjumper.screens;
+package com.juego.nemojump.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
@@ -12,23 +12,22 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.actions.Actions;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.juego.superjumper.utils.Assets;
-import com.juego.superjumper.MainSuperJumper;
-import com.juego.superjumper.utils.Settings;
-import com.juego.superjumper.game.GameScreen;
+import com.juego.nemojump.MainSuperJumper;
+import com.juego.nemojump.utils.Settings;
+import com.juego.nemojump.game.GameScreen;
 
 public abstract class Screens extends InputAdapter implements Screen {
+	// Variables estaticas que utilizaremos muchas veces
 	public static final int SCREEN_WIDTH = 480;
 	public static final int SCREEN_HEIGHT = 800;
 
 	public static final float WORLD_WIDTH = 4.8f;
 	public static final float WORLD_HEIGHT = 8f;
 
+	// Variable del Juego Base
 	public MainSuperJumper game;
 
+	// Camaras, etc
 	public OrthographicCamera oCam;
 	public SpriteBatch batcher;
 	public Stage stage;
@@ -36,17 +35,20 @@ public abstract class Screens extends InputAdapter implements Screen {
 	protected Music music;
 
 	public Screens(MainSuperJumper game) {
-		this.stage = game.stage;
-		this.stage.clear();
-		this.batcher = game.batcher;
+		// Sacar las variables que vamos a utilizar a partir del juego
 		this.game = game;
+		this.stage = game.stage;
+		this.batcher = game.batcher;
 
+		this.stage.clear();
+
+		// Crear la camara e centrar
 		oCam = new OrthographicCamera(SCREEN_WIDTH, SCREEN_HEIGHT);
 		oCam.position.set(SCREEN_WIDTH / 2f, SCREEN_HEIGHT / 2f, 0);
 
+		// InputMultiplexer te permite añadir varios procesos, como el stage, dentro de un objeto donde se puede ejecutar a la vez
 		InputMultiplexer input = new InputMultiplexer(this, stage);
 		Gdx.input.setInputProcessor(input);
-
 	}
 
 	@Override
@@ -62,11 +64,12 @@ public abstract class Screens extends InputAdapter implements Screen {
 
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		draw(delta);
-		stage.draw();
 
+		stage.draw();
 	}
 
-	public void addEfectoPress(final Actor actor) {
+	// Metodo para añadir un listener cuando pulsamos sobre un objeto / actor
+	public void addListenerPress(final Actor actor) {
 		actor.addListener(new InputListener() {
 			@Override
 			public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
@@ -111,7 +114,6 @@ public abstract class Screens extends InputAdapter implements Screen {
 			music.dispose();
 			music = null;
 		}
-
 		Settings.save();
 	}
 

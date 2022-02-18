@@ -1,19 +1,18 @@
-package com.juego.superjumper.game;
+package com.juego.nemojump.game;
 
 import java.util.Iterator;
 
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
-import com.juego.superjumper.utils.Assets;
-import com.juego.superjumper.objetos.Moneda;
-import com.juego.superjumper.objetos.Personaje;
-import com.juego.superjumper.objetos.PiezaPlataformas;
-import com.juego.superjumper.objetos.Plataformas;
-import com.juego.superjumper.screens.Screens;
+import com.juego.nemojump.utils.Assets;
+import com.juego.nemojump.objetos.Camarones;
+import com.juego.nemojump.objetos.Dory;
+import com.juego.nemojump.objetos.PiezaMedusa;
+import com.juego.nemojump.objetos.Medusa;
+import com.juego.nemojump.screens.Screens;
 
 public class WorldGameRender {
 	final float WIDTH = Screens.WORLD_WIDTH;
@@ -67,27 +66,27 @@ public class WorldGameRender {
 	private void renderPersonaje() {
 		AtlasRegion keyframe = null;
 
-		Personaje obj = oWorld.oPer;
-		keyframe = Assets.personaje;
+		Dory obj = oWorld.oPer;
+		keyframe = Assets.dory;
 
 		if (obj.velocidad.x < 0)
-			batcher.draw(keyframe, obj.position.x + Personaje.DRAW_WIDTH / 2f, obj.position.y - Personaje.DRAW_HEIGTH / 2f,
-					-Personaje.DRAW_WIDTH / 2f, Personaje.DRAW_HEIGTH / 2f, -Personaje.DRAW_WIDTH, Personaje.DRAW_HEIGTH, 1, 1, obj.angleDeg);
+			batcher.draw(keyframe, obj.position.x + Dory.DRAW_WIDTH / 2f, obj.position.y - Dory.DRAW_HEIGTH / 2f,
+					-Dory.DRAW_WIDTH / 2f, Dory.DRAW_HEIGTH / 2f, -Dory.DRAW_WIDTH, Dory.DRAW_HEIGTH, 1, 1, obj.angleDeg);
 
 		else
-			batcher.draw(keyframe, obj.position.x - Personaje.DRAW_WIDTH / 2f, obj.position.y - Personaje.DRAW_HEIGTH / 2f,
-					Personaje.DRAW_WIDTH / 2f, Personaje.DRAW_HEIGTH / 2f, Personaje.DRAW_WIDTH, Personaje.DRAW_HEIGTH, 1, 1, obj.angleDeg);
+			batcher.draw(keyframe, obj.position.x - Dory.DRAW_WIDTH / 2f, obj.position.y - Dory.DRAW_HEIGTH / 2f,
+					Dory.DRAW_WIDTH / 2f, Dory.DRAW_HEIGTH / 2f, Dory.DRAW_WIDTH, Dory.DRAW_HEIGTH, 1, 1, obj.angleDeg);
 
 	}
 
 	private void renderPlataformas() {
-		Iterator<Plataformas> i = oWorld.arrPlataformas.iterator();
+		Iterator<Medusa> i = oWorld.arrMedusas.iterator();
 		while (i.hasNext()) {
-			Plataformas obj = i.next();
+			Medusa obj = i.next();
 
 			AtlasRegion keyframe = null;
 
-			if (obj.tipo == Plataformas.TIPO_ROMPIBLE) {
+			if (obj.tipo == Medusa.TIPO_ROMPIBLE) {
 				keyframe = Assets.jellyfishYellow;
 				/*switch (obj.color) {
 					case Plataformas.JELLY:
@@ -127,16 +126,16 @@ public class WorldGameRender {
 
 				}*/
 			}
-			batcher.draw(keyframe, obj.position.x - Plataformas.DRAW_WIDTH_NORMAL / 2f, obj.position.y - Plataformas.DRAW_HEIGTH_NORMAL / 2f,
-					Plataformas.DRAW_WIDTH_NORMAL, Plataformas.DRAW_HEIGTH_NORMAL);
+			batcher.draw(keyframe, obj.position.x - Medusa.DRAW_WIDTH_NORMAL / 2f, obj.position.y - Medusa.DRAW_HEIGTH_NORMAL / 2f,
+					Medusa.DRAW_WIDTH_NORMAL, Medusa.DRAW_HEIGTH_NORMAL);
 
 		}
 	}
 
 	private void renderPiezasPlataformas() {
-		Iterator<PiezaPlataformas> i = oWorld.arrPiezasPlataformas.iterator();
+		Iterator<PiezaMedusa> i = oWorld.arrPiezasMedusas.iterator();
 		while (i.hasNext()) {
-			PiezaPlataformas obj = i.next();
+			PiezaMedusa obj = i.next();
 
 			AtlasRegion keyframe = null;
 
@@ -189,20 +188,20 @@ public class WorldGameRender {
 
 			keyframe = Assets.jellyfishBlue;
 
-			batcher.draw(keyframe, obj.position.x - PiezaPlataformas.DRAW_WIDTH_NORMAL / 2f, obj.position.y - PiezaPlataformas.DRAW_HEIGTH_NORMAL
-					/ 2f, PiezaPlataformas.DRAW_WIDTH_NORMAL / 2f, PiezaPlataformas.DRAW_HEIGTH_NORMAL / 2f, PiezaPlataformas.DRAW_WIDTH_NORMAL,
-					PiezaPlataformas.DRAW_HEIGTH_NORMAL, 1, 1, obj.angleDeg);
+			batcher.draw(keyframe, obj.position.x - PiezaMedusa.DRAW_WIDTH_NORMAL / 2f, obj.position.y - PiezaMedusa.DRAW_HEIGTH_NORMAL
+					/ 2f, PiezaMedusa.DRAW_WIDTH_NORMAL / 2f, PiezaMedusa.DRAW_HEIGTH_NORMAL / 2f, PiezaMedusa.DRAW_WIDTH_NORMAL,
+					PiezaMedusa.DRAW_HEIGTH_NORMAL, 1, 1, obj.angleDeg);
 
 		}
 	}
 
 	private void renderCoins() {
-		Iterator<Moneda> i = oWorld.arrMonedas.iterator();
+		Iterator<Camarones> i = oWorld.arrCamarones.iterator();
 		while (i.hasNext()) {
-			Moneda obj = i.next();
+			Camarones obj = i.next();
 
-			batcher.draw(Assets.coin, obj.position.x - Moneda.DRAW_WIDTH / 2f, obj.position.y - Moneda.DRAW_HEIGHT / 2f, Moneda.DRAW_WIDTH,
-					Moneda.DRAW_HEIGHT);
+			batcher.draw(Assets.camarones, obj.position.x - Camarones.DRAW_WIDTH / 2f, obj.position.y - Camarones.DRAW_HEIGHT / 2f, Camarones.DRAW_WIDTH,
+					Camarones.DRAW_HEIGHT);
 		}
 
 	}

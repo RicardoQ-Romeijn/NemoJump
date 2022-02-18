@@ -5,11 +5,11 @@
 	<inherits name='com.badlogic.gdx.physics.box2d.box2d-gwt' />
 
 	<inherits name='MainSuperJumper' />
-	<entry-point class='com.juego.superjumper.client.HtmlLauncher' />
+	<entry-point class='com.juego.nemojump.client.HtmlLauncher' />
 	<set-configuration-property name='xsiframe.failIfScriptTag' value='FALSE'/>
 	<set-configuration-property name="gdx.assetpath" value="../android/assets" />
 	<set-property name="user.agent" value="gecko1_8, safari"/>
 	<collapse-property name="user.agent" values="*" />
 
-	<extend-configuration-property name="gdx.reflect.include" value="com.juego.superjumper.objetos" />
+	<extend-configuration-property name="gdx.reflect.include" value="com.juego.nemojump.objetos" />
 </module>

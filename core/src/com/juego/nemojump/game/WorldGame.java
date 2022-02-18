@@ -1,4 +1,4 @@
-package com.juego.superjumper.game;
+package com.juego.nemojump.game;
 
 import java.util.Iterator;
 
@@ -19,11 +19,11 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Pools;
-import com.juego.superjumper.objetos.Moneda;
-import com.juego.superjumper.objetos.Personaje;
-import com.juego.superjumper.objetos.PiezaPlataformas;
-import com.juego.superjumper.objetos.Plataformas;
-import com.juego.superjumper.screens.Screens;
+import com.juego.nemojump.objetos.Camarones;
+import com.juego.nemojump.objetos.Dory;
+import com.juego.nemojump.objetos.PiezaMedusa;
+import com.juego.nemojump.objetos.Medusa;
+import com.juego.nemojump.screens.Screens;
 
 public class WorldGame {
 	final public static int STATE_RUNNING = 0;
@@ -32,12 +32,12 @@ public class WorldGame {
 
 	public World oWorldBox;
 
-	Personaje oPer;
+	Dory oPer;
 	private Array<Body> arrBodies;
-	Array<Plataformas> arrPlataformas;
-	Array<PiezaPlataformas> arrPiezasPlataformas;
-	Array<Moneda> arrMonedas;
-	public int coins;
+	Array<Medusa> arrMedusas;
+	Array<PiezaMedusa> arrPiezasMedusas;
+	Array<Camarones> arrCamarones;
+	public int camarones;
 	public int distanciaMax;
 	float mundoCreadoHastaY;
 
@@ -46,9 +46,9 @@ public class WorldGame {
 		oWorldBox.setContactListener(new Colisiones());
 
 		arrBodies = new Array<>();
-		arrPlataformas = new Array<>();
-		arrPiezasPlataformas = new Array<>();
-		arrMonedas = new Array<>();
+		arrMedusas = new Array<>();
+		arrPiezasMedusas = new Array<>();
+		arrCamarones = new Array<>();
 
 		state = STATE_RUNNING;
 
@@ -69,7 +69,7 @@ public class WorldGame {
 			crearPlataforma(mundoCreadoHastaY);
 
 			if (MathUtils.random(20) < 5)
-				Moneda.createUnaMoneda(oWorldBox, arrMonedas, mundoCreadoHastaY + .5f);
+				Camarones.createMoneda(oWorldBox, arrCamarones, mundoCreadoHastaY + .5f);
 
 		}
 
@@ -98,7 +98,7 @@ public class WorldGame {
 	}
 
 	private void crearPersonaje() {
-		oPer = new Personaje(2.4f, .5f);
+		oPer = new Dory(2.4f, .5f);
 
 		BodyDef bd = new BodyDef();
 		bd.position.set(oPer.position.x, oPer.position.y);
@@ -107,7 +107,7 @@ public class WorldGame {
 		Body body = oWorldBox.createBody(bd);
 
 		PolygonShape shape = new PolygonShape();
-		shape.setAsBox(Personaje.WIDTH / 2f, Personaje.HEIGTH / 2f);
+		shape.setAsBox(Dory.WIDTH / 2f, Dory.HEIGTH / 2f);
 
 		FixtureDef fixutre = new FixtureDef();
 		fixutre.shape = shape;
@@ -124,7 +124,7 @@ public class WorldGame {
 
 	private void crearPlataforma(float y) {
 
-		Plataformas oPlat = Pools.obtain(Plataformas.class);
+		Medusa oPlat = Pools.obtain(Medusa.class);
 		oPlat.init(MathUtils.random(Screens.WORLD_WIDTH), y, MathUtils.random(10));
 
 		BodyDef bd = new BodyDef();
@@ -134,40 +134,40 @@ public class WorldGame {
 		Body body = oWorldBox.createBody(bd);
 
 		PolygonShape shape = new PolygonShape();
-		shape.setAsBox(Plataformas.WIDTH_NORMAL / 2f, Plataformas.HEIGTH_NORMAL / 2f);
+		shape.setAsBox(Medusa.WIDTH_NORMAL / 2f, Medusa.HEIGTH_NORMAL / 2f);
 
 		FixtureDef fixutre = new FixtureDef();
 		fixutre.shape = shape;
 
 		body.createFixture(fixutre);
 		body.setUserData(oPlat);
-		arrPlataformas.add(oPlat);
+		arrMedusas.add(oPlat);
 
 		shape.dispose();
 
 	}
 
-	private void crearPiezasPlataforma(Plataformas oPlat) {
-		crearPiezasPlataforma(oPlat, PiezaPlataformas.TIPO_LEFT);
-		crearPiezasPlataforma(oPlat, PiezaPlataformas.TIPO_RIGHT);
+	private void crearPiezasPlataforma(Medusa oPlat) {
+		crearPiezasPlataforma(oPlat, PiezaMedusa.TIPO_LEFT);
+		crearPiezasPlataforma(oPlat, PiezaMedusa.TIPO_RIGHT);
 
 	}
 
-	private void crearPiezasPlataforma(Plataformas oPla, int tipo) {
-		PiezaPlataformas oPieza;
+	private void crearPiezasPlataforma(Medusa oPla, int tipo) {
+		PiezaMedusa oPieza;
 		float x;
 		float angularVelocity = 100;
 
-		if (tipo == PiezaPlataformas.TIPO_LEFT) {
-			x = oPla.position.x - PiezaPlataformas.WIDTH_NORMAL / 2f;
+		if (tipo == PiezaMedusa.TIPO_LEFT) {
+			x = oPla.position.x - PiezaMedusa.WIDTH_NORMAL / 2f;
 			angularVelocity *= -1;
 		}
 		else {
-			x = oPla.position.x + PiezaPlataformas.WIDTH_NORMAL / 2f;
+			x = oPla.position.x + PiezaMedusa.WIDTH_NORMAL / 2f;
 		}
 
-		oPieza = Pools.obtain(PiezaPlataformas.class);
-		oPieza.init(x, oPla.position.y, tipo, oPla.color);
+		oPieza = Pools.obtain(PiezaMedusa.class);
+		oPieza.init(x, oPla.position.y, tipo);
 
 		BodyDef bd = new BodyDef();
 		bd.position.set(oPieza.position.x, oPieza.position.y);
@@ -176,7 +176,7 @@ public class WorldGame {
 		Body body = oWorldBox.createBody(bd);
 
 		PolygonShape shape = new PolygonShape();
-		shape.setAsBox(PiezaPlataformas.WIDTH_NORMAL / 2f, PiezaPlataformas.HEIGTH_NORMAL / 2f);
+		shape.setAsBox(PiezaMedusa.WIDTH_NORMAL / 2f, PiezaMedusa.HEIGTH_NORMAL / 2f);
 
 		FixtureDef fixutre = new FixtureDef();
 		fixutre.shape = shape;
@@ -185,7 +185,7 @@ public class WorldGame {
 		body.createFixture(fixutre);
 		body.setUserData(oPieza);
 		body.setAngularVelocity(MathUtils.degRad * angularVelocity);
-		arrPiezasPlataformas.add(oPieza);
+		arrPiezasMedusas.add(oPieza);
 
 		shape.dispose();
 	}
@@ -207,16 +207,16 @@ public class WorldGame {
 
 		while (i.hasNext()) {
 			Body body = i.next();
-			if (body.getUserData() instanceof Personaje) {
+			if (body.getUserData() instanceof Dory) {
 				updatePersonaje(body, delta, acelX, touchPositionWorldCoords);
 			}
-			else if (body.getUserData() instanceof Plataformas) {
+			else if (body.getUserData() instanceof Medusa) {
 				updatePlataforma(body, delta);
 			}
-			else if (body.getUserData() instanceof PiezaPlataformas) {
+			else if (body.getUserData() instanceof PiezaMedusa) {
 				updatePiezaPlataforma(body, delta);
 			}
-			else if (body.getUserData() instanceof Moneda) {
+			else if (body.getUserData() instanceof Camarones) {
 				updateMoneda(body, delta);
 			}
 
@@ -227,10 +227,10 @@ public class WorldGame {
 		}
 
 		// Si el personaje esta 5.5f mas abajo de la altura maxima se muere (Se multiplica por 10 porque la distancia se multiplica por 10 )
-		if (oPer.state == Personaje.STATE_NORMAL && distanciaMax - (5.5f * 10) > (oPer.position.y * 10)) {
+		if (oPer.state == Dory.STATE_NORMAL && distanciaMax - (5.5f * 10) > (oPer.position.y * 10)) {
 			oPer.die();
 		}
-		if (oPer.state == Personaje.STATE_DEAD && distanciaMax - (25 * 10) > (oPer.position.y * 10)) {
+		if (oPer.state == Dory.STATE_DEAD && distanciaMax - (25 * 10) > (oPer.position.y * 10)) {
 			state = STATE_GAMEOVER;
 		}
 
@@ -245,34 +245,34 @@ public class WorldGame {
 
 			if (!oWorldBox.isLocked()) {
 
-				if (body.getUserData() instanceof Plataformas) {
-					Plataformas oPlat = (Plataformas) body.getUserData();
-					if (oPlat.state == Plataformas.STATE_DESTROY) {
-						arrPlataformas.removeValue(oPlat, true);
+				if (body.getUserData() instanceof Medusa) {
+					Medusa oPlat = (Medusa) body.getUserData();
+					if (oPlat.state == Medusa.STATE_DESTROY) {
+						arrMedusas.removeValue(oPlat, true);
 						oWorldBox.destroyBody(body);
-						if (oPlat.tipo == Plataformas.TIPO_ROMPIBLE)
+						if (oPlat.tipo == Medusa.TIPO_ROMPIBLE)
 							crearPiezasPlataforma(oPlat);
 						Pools.free(oPlat);
 					}
 				}
-				else if (body.getUserData() instanceof Moneda) {
-					Moneda oMon = (Moneda) body.getUserData();
-					if (oMon.state == Moneda.STATE_TAKEN) {
-						arrMonedas.removeValue(oMon, true);
+				else if (body.getUserData() instanceof Camarones) {
+					Camarones oMon = (Camarones) body.getUserData();
+					if (oMon.state == Camarones.STATE_TAKEN) {
+						arrCamarones.removeValue(oMon, true);
 						oWorldBox.destroyBody(body);
 						Pools.free(oMon);
 					}
 				}
-				else if (body.getUserData() instanceof PiezaPlataformas) {
-					PiezaPlataformas oPiez = (PiezaPlataformas) body.getUserData();
-					if (oPiez.state == PiezaPlataformas.STATE_DESTROY) {
-						arrPiezasPlataformas.removeValue(oPiez, true);
+				else if (body.getUserData() instanceof PiezaMedusa) {
+					PiezaMedusa oPiez = (PiezaMedusa) body.getUserData();
+					if (oPiez.state == PiezaMedusa.STATE_DESTROY) {
+						arrPiezasMedusas.removeValue(oPiez, true);
 						oWorldBox.destroyBody(body);
 						Pools.free(oPiez);
 					}
 				}
 				else if (body.getUserData().equals("suelo")) {
-					if (oPer.position.y - 5.5f > body.getPosition().y || oPer.state == Personaje.STATE_DEAD) {
+					if (oPer.position.y - 5.5f > body.getPosition().y || oPer.state == Dory.STATE_DEAD) {
 						oWorldBox.destroyBody(body);
 					}
 				}
@@ -285,7 +285,7 @@ public class WorldGame {
 	}
 
 	private void updatePlataforma(Body body, float delta) {
-		Plataformas obj = (Plataformas) body.getUserData();
+		Medusa obj = (Medusa) body.getUserData();
 		obj.update(delta);
 		if (oPer.position.y - 5.5f > obj.position.y) {
 			obj.setDestroy();
@@ -293,7 +293,7 @@ public class WorldGame {
 	}
 
 	private void updatePiezaPlataforma(Body body, float delta) {
-		PiezaPlataformas obj = (PiezaPlataformas) body.getUserData();
+		PiezaMedusa obj = (PiezaMedusa) body.getUserData();
 		obj.update(delta, body);
 		if (oPer.position.y - 5.5f > obj.position.y) {
 			obj.setDestroy();
@@ -302,7 +302,7 @@ public class WorldGame {
 	}
 
 	private void updateMoneda(Body body, float delta) {
-		Moneda obj = (Moneda) body.getUserData();
+		Camarones obj = (Camarones) body.getUserData();
 		obj.update(delta);
 		if (oPer.position.y - 5.5f > obj.position.y) {
 			obj.take();
@@ -317,9 +317,9 @@ public class WorldGame {
 			Fixture a = contact.getFixtureA();
 			Fixture b = contact.getFixtureB();
 
-			if (a.getBody().getUserData() instanceof Personaje)
+			if (a.getBody().getUserData() instanceof Dory)
 				beginContactPersonaje(a, b);
-			else if (b.getBody().getUserData() instanceof Personaje)
+			else if (b.getBody().getUserData() instanceof Dory)
 				beginContactPersonaje(b, a);
 
 		}
@@ -330,15 +330,15 @@ public class WorldGame {
 			if (otraCosa.equals("suelo")) {
 				oPer.jump();
 
-				if (oPer.state == Personaje.STATE_DEAD) {
+				if (oPer.state == Dory.STATE_DEAD) {
 					state = STATE_GAMEOVER;
 				}
 			}
-			else if (otraCosa instanceof Plataformas) {
-				Plataformas plataforma = (Plataformas) otraCosa;
+			else if (otraCosa instanceof Medusa) {
+				Medusa plataforma = (Medusa) otraCosa;
 
 				if (oPer.velocidad.y <= 0) {
-					if (plataforma.tipo != Plataformas.TIPO_ROMPIBLE) {
+					if (plataforma.tipo != Medusa.TIPO_ROMPIBLE) {
 						oPer.jump();
 					} else {
 						plataforma.setDestroy();
@@ -346,10 +346,10 @@ public class WorldGame {
 				}
 
 			}
-			else if (otraCosa instanceof Moneda) {
-				Moneda moneda = (Moneda) otraCosa;
-				moneda.take();
-				coins++;
+			else if (otraCosa instanceof Camarones) {
+				Camarones camarones = (Camarones) otraCosa;
+				camarones.take();
+				WorldGame.this.camarones++;
 				//oPer.jump();
 			}
 
@@ -365,9 +365,9 @@ public class WorldGame {
 			Fixture a = contact.getFixtureA();
 			Fixture b = contact.getFixtureB();
 
-			if (a.getBody().getUserData() instanceof Personaje)
+			if (a.getBody().getUserData() instanceof Dory)
 				preSolveHero(a, b, contact);
-			else if (b.getBody().getUserData() instanceof Personaje)
+			else if (b.getBody().getUserData() instanceof Dory)
 				preSolveHero(b, a, contact);
 
 		}
@@ -375,18 +375,18 @@ public class WorldGame {
 		private void preSolveHero(Fixture fixPersonaje, Fixture otraCosa, Contact contact) {
 			Object oOtraCosa = otraCosa.getBody().getUserData();
 
-			if (oOtraCosa instanceof Plataformas) {
+			if (oOtraCosa instanceof Medusa) {
 				// Si va para arriba atraviesa la plataforma
 
-				Plataformas obj = (Plataformas) oOtraCosa;
+				Medusa obj = (Medusa) oOtraCosa;
 
 				float ponyY = fixPersonaje.getBody().getPosition().y - .30f;
-				float pisY = obj.position.y + Plataformas.HEIGTH_NORMAL / 2f;
+				float pisY = obj.position.y + Medusa.HEIGTH_NORMAL / 2f;
 
 				if (ponyY < pisY)
 					contact.setEnabled(false);
 
-				if (obj.tipo == Plataformas.TIPO_NORMAL && oPer.state == Personaje.STATE_DEAD) {
+				if (obj.tipo == Medusa.TIPO_NORMAL && oPer.state == Dory.STATE_DEAD) {
 					contact.setEnabled(false);
 				}
 

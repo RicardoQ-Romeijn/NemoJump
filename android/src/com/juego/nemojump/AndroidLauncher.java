@@ -1,12 +1,12 @@
-package com.juego.superjumper;
+package com.juego.nemojump;
 
 import android.os.Bundle;
 
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
-import com.juego.superjumper.handlers.FacebookHandler;
-import com.juego.superjumper.handlers.GameServicesHandler;
-import com.juego.superjumper.handlers.RequestHandler;
+import com.juego.nemojump.handlers.FacebookHandler;
+import com.juego.nemojump.handlers.GameServicesHandler;
+import com.juego.nemojump.handlers.RequestHandler;
 
 public class AndroidLauncher extends AndroidApplication implements FacebookHandler, RequestHandler, GameServicesHandler {
     @Override

@@ -1,12 +1,12 @@
-package com.juego.superjumper.client;
+package com.juego.nemojump.client;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.backends.gwt.GwtApplication;
 import com.badlogic.gdx.backends.gwt.GwtApplicationConfiguration;
-import com.juego.superjumper.MainSuperJumper;
-import com.juego.superjumper.handlers.FacebookHandler;
-import com.juego.superjumper.handlers.GameServicesHandler;
-import com.juego.superjumper.handlers.RequestHandler;
+import com.juego.nemojump.MainSuperJumper;
+import com.juego.nemojump.handlers.FacebookHandler;
+import com.juego.nemojump.handlers.GameServicesHandler;
+import com.juego.nemojump.handlers.RequestHandler;
 
 public class HtmlLauncher extends GwtApplication implements FacebookHandler, RequestHandler, GameServicesHandler {
 

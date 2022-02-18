@@ -1,8 +1,8 @@
-package com.juego.superjumper.desktop;
+package com.juego.nemojump.desktop;
 
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
-import com.juego.superjumper.MainSuperJumper;
+import com.juego.nemojump.MainSuperJumper;
 
 public class DesktopLauncher {
     public static void main(String[] arg) {

@@ -1,4 +1,4 @@
-package com.juego.superjumper.game;
+package com.juego.nemojump.game;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
@@ -10,12 +10,12 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
-import com.juego.superjumper.utils.Assets;
-import com.juego.superjumper.MainSuperJumper;
-import com.juego.superjumper.utils.Settings;
-import com.juego.superjumper.scene2d.VentanaGameover;
-import com.juego.superjumper.scene2d.VentanaPause;
-import com.juego.superjumper.screens.Screens;
+import com.juego.nemojump.utils.Assets;
+import com.juego.nemojump.MainSuperJumper;
+import com.juego.nemojump.utils.Settings;
+import com.juego.nemojump.screens.VentanaGameover;
+import com.juego.nemojump.screens.VentanaPause;
+import com.juego.nemojump.screens.Screens;
 
 public class GameScreen extends Screens {
 
@@ -29,7 +29,7 @@ public class GameScreen extends Screens {
 
 	Vector3 touchPositionWorldCoords;
 
-	Label lbDistancia, lbMonedas;
+	Label lbDistancia, lbCamarones;
 
 	Button btPause;
 
@@ -53,18 +53,18 @@ public class GameScreen extends Screens {
 		menuMarcador.setSize(SCREEN_WIDTH, 40);
 		menuMarcador.setY(SCREEN_HEIGHT - menuMarcador.getHeight());
 
-		lbMonedas = new Label("", Assets.labelStyleGrande);
-		lbDistancia = new Label("", Assets.labelStyleGrande);
+		lbCamarones = new Label("", Assets.labelStyle);
+		lbDistancia = new Label("", Assets.labelStyle);
 
-		menuMarcador.add(new Image(new TextureRegionDrawable(Assets.coin))).left().padLeft(5);
-		menuMarcador.add(lbMonedas).left();
+		menuMarcador.add(new Image(new TextureRegionDrawable(Assets.camarones))).left().padLeft(5);
+		menuMarcador.add(lbCamarones).left();
 
 		menuMarcador.add(lbDistancia).center().expandX();
 
 		btPause = new Button(Assets.btPause);
 		btPause.setSize(35, 35);
 		btPause.setPosition(SCREEN_WIDTH - 40, SCREEN_HEIGHT - 40);
-		addEfectoPress(btPause);
+		addListenerPress(btPause);
 		btPause.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
@@ -103,7 +103,7 @@ public class GameScreen extends Screens {
 
 		oWorld.update(delta, acelX, touchPositionWorldCoords);
 
-		lbMonedas.setText("x" + oWorld.coins);
+		lbCamarones.setText("x" + oWorld.camarones);
 		lbDistancia.setText("Score " + oWorld.distanciaMax);
 
 		if (oWorld.state == WorldGame.STATE_GAMEOVER) {
@@ -143,7 +143,13 @@ public class GameScreen extends Screens {
 
 	private void setGameover() {
 		state = STATE_GAME_OVER;
+
+		// Actualizar información en Settings por si hemos batido nuestro record
+		Settings.addGame();
 		Settings.setBestScore(oWorld.distanciaMax);
+		Settings.addCoinsTotal(oWorld.camarones);
+
+		// Cambiar Ventana
 		new VentanaGameover(this).show(stage);
 	}
 

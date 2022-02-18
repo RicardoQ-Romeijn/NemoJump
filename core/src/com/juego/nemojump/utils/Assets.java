@@ -1,4 +1,4 @@
-package com.juego.superjumper.utils;
+package com.juego.nemojump.utils;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
@@ -8,28 +8,29 @@ import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
-import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 
 public class Assets {
 
-	public static BitmapFont fontChico;
-	public static BitmapFont fontGrande;
+	public static BitmapFont font;
 
 	public static AtlasRegion fondo;
 	public static TextureRegionDrawable titulo;
 
-	/**
-	 * Personaje
+	/*
+	 * Dory
 	 */
-	public static AtlasRegion personaje;
-	public static final String personajeJumpSound = "data/boing.mp3";
-	public static AtlasRegion coin;
+	public static AtlasRegion dory;
+	public static final String doryJumpSound = "data/boing.mp3";
 
-	/**
+	/*
+	* Camarones
+	*/
+	public static AtlasRegion camarones;
+
+	/*
 	* Jellyfish
 	*/
-
 	public static AtlasRegion jellyfishMain;
 	public static AtlasRegion jellyfishMainSquished;
 	public static AtlasRegion jellyfishMainExpanded;
@@ -44,51 +45,45 @@ public class Assets {
 	public static AtlasRegion jellyfishBlue;
 	public static AtlasRegion jellyfishBlueSquished;
 
+	/*
+	* Boton de Pausa
+	*/
 	public static TextureRegionDrawable btPause;
 
-	public static LabelStyle labelStyleChico;
-	public static LabelStyle labelStyleGrande;
-	public static TextButtonStyle textButtonStyleGrande;
+	/*
+	* Fonts
+	*/
+	public static LabelStyle labelStyle;
+	public static TextButtonStyle textButtonStyle;
 
-
+	/*
+	* Asset Manager
+	*/
 	public static AssetManager assetManager;
 
-	public static void loadStyles(TextureAtlas atlas) {
-		// Label Style
-		labelStyleChico = new LabelStyle(fontChico, Color.WHITE);
-		labelStyleGrande = new LabelStyle(fontGrande, Color.WHITE);
-
-		TextureRegionDrawable button = new TextureRegionDrawable(atlas.findRegion("button"));
-		textButtonStyleGrande = new TextButtonStyle(button, button, null, fontGrande);
-	}
-
+	/*
+	* Cargar todos los assets necesarios para el juego
+	*/
 	public static void load() {
-		TextureAtlas atlas = new TextureAtlas(Gdx.files.internal("data/atlasMap.txt"));
+		// Cargar el Texture Atlas del Juego
 		TextureAtlas nemoAtlas = new TextureAtlas(Gdx.files.internal("data/Jellyfish.atlas"));
 
-		// fontChico = new BitmapFont(Gdx.files.internal("data/fontChico.fnt"), atlas.findRegion("fontChico"));
-		fontChico = new BitmapFont(Gdx.files.internal("data/font.fnt"), nemoAtlas.findRegion("font"));
-		fontGrande = new BitmapFont(Gdx.files.internal("data/font.fnt"), nemoAtlas.findRegion("font"));
-
-		loadStyles(atlas);
+		// Cargar cada asset a partir del Texture Atlas
+		font = new BitmapFont(Gdx.files.internal("data/font.fnt"), nemoAtlas.findRegion("font"));
 
 		btPause = new TextureRegionDrawable(nemoAtlas.findRegion("btPause"));
-
 		fondo = nemoAtlas.findRegion("background");
 		titulo = new TextureRegionDrawable(nemoAtlas.findRegion("title"));
 
-		/**
+		/*
 		 * Personaje
 		 */
+		dory = nemoAtlas.findRegion("dory");
+		camarones = nemoAtlas.findRegion("corepod");
 
-		personaje = nemoAtlas.findRegion("dory");
-
-		coin = nemoAtlas.findRegion("corepod");
-
-		/**
+		/*
 		 * Jellyfish
 		 */
-
 		jellyfishMain = nemoAtlas.findRegion("jelly-2");
 		jellyfishMainExpanded = nemoAtlas.findRegion("jelly-1");
 		jellyfishMainSquished = nemoAtlas.findRegion("jelly-3");
@@ -103,14 +98,28 @@ public class Assets {
 		jellyfishPink = nemoAtlas.findRegion("jellyfish-medium2");
 		jellyfishPinkSquished = nemoAtlas.findRegion("jellyfish-medium1");
 
+		// Cargar los Fonts para Botones e Etiquetas
+		loadStyles(nemoAtlas);
+
+		// Utilizamos el Asset Manager para cargar los sonidos
 		assetManager = new AssetManager();
-
-		assetManager.load(personajeJumpSound, Sound.class);
-
+		assetManager.load(doryJumpSound, Sound.class);
 		assetManager.finishLoading();
 	}
 
+	/*
+	 * Cargar los fonts
+	 */
+	public static void loadStyles(TextureAtlas atlas) {
+		labelStyle = new LabelStyle(font, Color.BLACK);
+		TextureRegionDrawable button = new TextureRegionDrawable(atlas.findRegion("button"));
+		textButtonStyle = new TextButtonStyle(button, button, null, font);
+	}
+
+	/*
+	* Devolver el Sonido de Saltar
+	*/
 	public static Sound getJumpSound(){
-		return assetManager.get(personajeJumpSound);
+		return assetManager.get(doryJumpSound);
 	}
 }
