@@ -4,7 +4,6 @@ import java.util.Iterator;
 
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
@@ -24,15 +23,22 @@ import com.juego.nemojump.objetos.Dory;
 import com.juego.nemojump.objetos.PiezaMedusa;
 import com.juego.nemojump.objetos.Medusa;
 import com.juego.nemojump.screens.Screens;
+import com.juego.nemojump.utils.Assets;
 
+/**
+ * Esta clase contendrá la física del juego
+ */
 public class WorldGame {
+	// Estados del juego
 	final public static int STATE_RUNNING = 0;
 	final public static int STATE_GAMEOVER = 1;
 	int state;
 
+	// Objeto del mundo del juego
 	public World oWorldBox;
 
-	Dory oPer;
+	// Objetos que saldrán en el juego
+	Dory oDory;
 	private Array<Body> arrBodies;
 	Array<Medusa> arrMedusas;
 	Array<PiezaMedusa> arrPiezasMedusas;
@@ -41,74 +47,90 @@ public class WorldGame {
 	public int distanciaMax;
 	float mundoCreadoHastaY;
 
+	// Constructor de esta clase
 	public WorldGame() {
+		// Instanciamos el mundo que tendrá una gravedad de -9.8
 		oWorldBox = new World(new Vector2(0, -9.8f), true);
+		// Ponemos el contact listener a la clase colisiones (Definido al final de este fichero)
 		oWorldBox.setContactListener(new Colisiones());
 
+		// Instanciamos los arrays
 		arrBodies = new Array<>();
 		arrMedusas = new Array<>();
 		arrPiezasMedusas = new Array<>();
 		arrCamarones = new Array<>();
 
+		// Ponemos el esta del juego en modo "marcha"
 		state = STATE_RUNNING;
 
+		// Creamos un suelo base y el personaje, que solo se creará una vez
 		crearSuelo();
-		crearPersonaje();
+		crearDory();
 
-		mundoCreadoHastaY = oPer.position.y;
+		// Cogemos la posición Y del personaje, que nos indica la altura a la que ha llegado dory
+		mundoCreadoHastaY = oDory.position.y;
+		// Este metodo crea la sigiente parte del juego mediante vayamos avanzando verticalmente
 		crearSiguienteParte();
 
 	}
 
+	/**
+	 * Este metodo nos crea la siguente parte verticalmente , donde nos crea las plataformas
+	 * y las monedas del mundo.
+	 */
 	private void crearSiguienteParte() {
-		float y = mundoCreadoHastaY + 2;
+		float y = mundoCreadoHastaY + 1f; // La distancia que queremos entre una plataforma y otra
 
-		for (int i = 0; mundoCreadoHastaY < (y + 10); i++) {
+		for (int i = 0; mundoCreadoHastaY < y; i++) {
+			// A mediado que vamos avanzando tenemos que sobreescribir la altura maxima
 			mundoCreadoHastaY = y + (i);
-
-			crearPlataforma(mundoCreadoHastaY);
-
+			// Creamos una plataforma
+			crearMedusa(mundoCreadoHastaY);
+			// Una probabilidad de crear los camarones
 			if (MathUtils.random(20) < 5)
-				Camarones.createMoneda(oWorldBox, arrCamarones, mundoCreadoHastaY + .5f);
-
+				Camarones.createCamaron(oWorldBox, arrCamarones, mundoCreadoHastaY + .5f);
 		}
-
 	}
 
-	/**
-	 * El piso solo aparece 1 vez, al principio del juego
-	 */
+	// Metodo de crear el suerlo. El suelo solo aparece 1 vez, al principio del juego
 	private void crearSuelo() {
-		BodyDef bd = new BodyDef();
-		bd.type = BodyType.StaticBody;
+		BodyDef bd = new BodyDef(); // Creamos un objeto que definirá el cuerpo
+		bd.type = BodyType.StaticBody; // Tipo estatico
 
-		Body body = oWorldBox.createBody(bd);
+		Body body = oWorldBox.createBody(bd); // Creamos el cuerpo del objeto en el mundo
 
+		// El tipo de objeto que será, en este caso una linea recta que abarca en la parte inferior el ancho de la pantalla
 		EdgeShape shape = new EdgeShape();
 		shape.set(0, 0, Screens.WORLD_WIDTH, 0);
 
+		// Tenemos que darle una fixtura al cuerpo
 		FixtureDef fixutre = new FixtureDef();
 		fixutre.shape = shape;
 
+		// De lamos la fixtura al cuerpo, y le damos un nombre
 		body.createFixture(fixutre);
 		body.setUserData("suelo");
-
+		// Borramos el tamaño porque no se va a utilizar mas
 		shape.dispose();
-
 	}
 
-	private void crearPersonaje() {
-		oPer = new Dory(2.4f, .5f);
+	// Metodo de crear el personaje
+	private void crearDory() {
+		// Creamos a nuestro personaje en la posicion indicada
+		oDory = new Dory(2.4f, .5f);
 
+		// La mayoría del codigo es igual que el Suelo, comentaré las parte que cambian.
 		BodyDef bd = new BodyDef();
-		bd.position.set(oPer.position.x, oPer.position.y);
-		bd.type = BodyType.DynamicBody;
+		bd.position.set(oDory.position.x, oDory.position.y);
+		bd.type = BodyType.DynamicBody; // El cuerpo será de tipo dinamico porque el personaje tiene que moverse
 
 		Body body = oWorldBox.createBody(bd);
 
+		// El tipo de objeto será un cuadrado
 		PolygonShape shape = new PolygonShape();
 		shape.setAsBox(Dory.WIDTH / 2f, Dory.HEIGTH / 2f);
 
+		// En la fixtura le tenemos que dar una densidad para que parezca que tenga peso
 		FixtureDef fixutre = new FixtureDef();
 		fixutre.shape = shape;
 		fixutre.density = 10;
@@ -116,20 +138,23 @@ public class WorldGame {
 		fixutre.restitution = 0;
 
 		body.createFixture(fixutre);
-		body.setUserData(oPer);
-		body.setFixedRotation(true);
+		body.setUserData(oDory); // nombre en este caso va a ser el Objeto Dory
+		body.setFixedRotation(true); // El objeto no rotará
 
 		shape.dispose();
 	}
 
-	private void crearPlataforma(float y) {
+	// Metodo de crear la medusa
+	private void crearMedusa(float y) {
+		// Creamos un objeto medusa, y como hereda de Pooleable, lo instanciamos de la siguente manera:
+		Medusa oMedusa = Pools.obtain(Medusa.class);
+		// Initializamos la medusa, con la posicion como parametros
+		oMedusa.init(MathUtils.random(Screens.WORLD_WIDTH), y);
 
-		Medusa oPlat = Pools.obtain(Medusa.class);
-		oPlat.init(MathUtils.random(Screens.WORLD_WIDTH), y, MathUtils.random(10));
-
+		// La mayoría del codigo es igual que el Suelo y Dory, comentaré las parte que cambian.
 		BodyDef bd = new BodyDef();
-		bd.position.set(oPlat.position.x, oPlat.position.y);
-		bd.type = BodyType.KinematicBody;
+		bd.position.set(oMedusa.position.x, oMedusa.position.y);
+		bd.type = BodyType.KinematicBody; // Tipo quinematico
 
 		Body body = oWorldBox.createBody(bd);
 
@@ -140,38 +165,42 @@ public class WorldGame {
 		fixutre.shape = shape;
 
 		body.createFixture(fixutre);
-		body.setUserData(oPlat);
-		arrMedusas.add(oPlat);
+		body.setUserData(oMedusa); // De nombre le pasasmos el objeto de medusa
+		arrMedusas.add(oMedusa); // Añadimos al array la medusa
 
 		shape.dispose();
-
 	}
 
+	// Metodo que nos creará ambas partes de las piezas
 	private void crearPiezasPlataforma(Medusa oPlat) {
+		// Llama al metodo que nos crea la física de cada parte
 		crearPiezasPlataforma(oPlat, PiezaMedusa.TIPO_LEFT);
 		crearPiezasPlataforma(oPlat, PiezaMedusa.TIPO_RIGHT);
 
 	}
 
+	// Metodo que crea las piezas de medusa individualmente
 	private void crearPiezasPlataforma(Medusa oPla, int tipo) {
-		PiezaMedusa oPieza;
-		float x;
-		float angularVelocity = 100;
+		float x; // La posición x de la medusa
+		float angularVelocity = 100; // La velocidad de rotación que tendrá
 
+		// Si es la medusa izquierda
 		if (tipo == PiezaMedusa.TIPO_LEFT) {
-			x = oPla.position.x - PiezaMedusa.WIDTH_NORMAL / 2f;
-			angularVelocity *= -1;
-		}
-		else {
+			x = oPla.position.x - PiezaMedusa.WIDTH_NORMAL / 2f; // La parte de cada medusa es la mitad del tamaño que el original
+			angularVelocity *= -1; // La velocidad la pasamos a negativo para que rote al lado contrario
+		} else { // La parte derecha
 			x = oPla.position.x + PiezaMedusa.WIDTH_NORMAL / 2f;
 		}
 
-		oPieza = Pools.obtain(PiezaMedusa.class);
+		// Creamos el objeto a partir del modelo
+		PiezaMedusa oPieza = Pools.obtain(PiezaMedusa.class);
+		// Llamamos al metodo que initializa el objeto
 		oPieza.init(x, oPla.position.y, tipo);
 
+		// Creamos la definición del cuerpo
 		BodyDef bd = new BodyDef();
 		bd.position.set(oPieza.position.x, oPieza.position.y);
-		bd.type = BodyType.DynamicBody;
+		bd.type = BodyType.DynamicBody; // Tipo dinamico porque se moverá
 
 		Body body = oWorldBox.createBody(bd);
 
@@ -180,179 +209,187 @@ public class WorldGame {
 
 		FixtureDef fixutre = new FixtureDef();
 		fixutre.shape = shape;
-		fixutre.isSensor = true;
+		fixutre.isSensor = true; // Lo ponemos como sensor porque queremos que no tenga colisión
 
 		body.createFixture(fixutre);
 		body.setUserData(oPieza);
-		body.setAngularVelocity(MathUtils.degRad * angularVelocity);
-		arrPiezasMedusas.add(oPieza);
+		body.setAngularVelocity(MathUtils.degRad * angularVelocity); // Damos la velocidad  angular al cuerpo
+		arrPiezasMedusas.add(oPieza); // Añadimos al array la parte
 
 		shape.dispose();
 	}
 
-	public void update(float delta, float acelX, Vector3 touchPositionWorldCoords) {
+	// Metodo update
+	public void update(float delta, float acelX) {
+		// Llamamos a step. Este se encarga de hacer la detección de colisiones, la integración y la solucón de los constrains
 		oWorldBox.step(delta, 8, 4);
 
+		// Llamamos al metodo que nos limipia los objetos que ya no utlizamos o no estan en pantalla
 		eliminarObjetos();
 
-		/**
-		 * Reviso si es necesario generar la siquiete parte del mundo
-		 */
-		if (oPer.position.y + 10 > mundoCreadoHastaY) {
+		// Reviso si es necesario generar la siquiete parte del mundo
+		if (oDory.position.y + 10 > mundoCreadoHastaY) {
 			crearSiguienteParte();
 		}
 
+		// Recorremos todos los objetos del mundo, para hacer su update
 		oWorldBox.getBodies(arrBodies);
 		Iterator<Body> i = arrBodies.iterator();
 
 		while (i.hasNext()) {
 			Body body = i.next();
+			// Hacemos metodos para cada instancia
 			if (body.getUserData() instanceof Dory) {
-				updatePersonaje(body, delta, acelX, touchPositionWorldCoords);
+				updateDory(body, delta, acelX);
 			}
 			else if (body.getUserData() instanceof Medusa) {
-				updatePlataforma(body, delta);
+				updateMedusa(body, delta);
 			}
 			else if (body.getUserData() instanceof PiezaMedusa) {
-				updatePiezaPlataforma(body, delta);
+				updatePiezaMedusa(body, delta);
 			}
 			else if (body.getUserData() instanceof Camarones) {
-				updateMoneda(body, delta);
+				updateCamarones(body, delta);
 			}
-
 		}
 
-		if (distanciaMax < (oPer.position.y * 10)) {
-			distanciaMax = (int) (oPer.position.y * 10);
+		// Vamos aumentando la distancia maxima que ha recorrido Dory
+		if (distanciaMax < (oDory.position.y * 10)) {
+			distanciaMax = (int) (oDory.position.y * 10);
 		}
 
-		// Si el personaje esta 5.5f mas abajo de la altura maxima se muere (Se multiplica por 10 porque la distancia se multiplica por 10 )
-		if (oPer.state == Dory.STATE_NORMAL && distanciaMax - (5.5f * 10) > (oPer.position.y * 10)) {
-			oPer.die();
+		// Si el personaje esta 5.5f mas abajo de la altura maxima se muere
+		// (Se multiplica por 10 porque la distancia se multiplica por 10 )
+		if (oDory.state == Dory.STATE_NORMAL && distanciaMax - (5.5f * 10) > (oDory.position.y * 10)) {
+			oDory.die();
 		}
-		if (oPer.state == Dory.STATE_DEAD && distanciaMax - (25 * 10) > (oPer.position.y * 10)) {
+		// Ponemos el estado del juego a muerto si el estado de dory esta muerto y el personaje esta 5.5f mas abajo de la altura maxima
+		if (oDory.state == Dory.STATE_DEAD && distanciaMax - (25 * 10) > (oDory.position.y * 10)) {
 			state = STATE_GAMEOVER;
 		}
-
 	}
 
+	// Metodo de eliminar los objetos, para opitimizar el rendimiento
 	private void eliminarObjetos() {
+		// Cogemos todos los cuerpos en el juego
 		oWorldBox.getBodies(arrBodies);
 		Iterator<Body> i = arrBodies.iterator();
-
+		// Recorremons el iterator
 		while (i.hasNext()) {
-			Body body = i.next();
+			// Creamos el objeto base
+			Body body = i.next(); // Recordamos que el data del cuerpo tiene el objeto instanciado
 
+			// Si el mundo esta abierto para modificaciones
 			if (!oWorldBox.isLocked()) {
-
-				if (body.getUserData() instanceof Medusa) {
+				if (body.getUserData() instanceof Medusa) { // Si es instancia de medusa
 					Medusa oPlat = (Medusa) body.getUserData();
-					if (oPlat.state == Medusa.STATE_DESTROY) {
-						arrMedusas.removeValue(oPlat, true);
-						oWorldBox.destroyBody(body);
-						if (oPlat.tipo == Medusa.TIPO_ROMPIBLE)
+					if (oPlat.state == Medusa.STATE_DESTROY) { // Si el estado de medusa esta en muerto / romper
+						arrMedusas.removeValue(oPlat, true); // Borramos el objeto del array
+						oWorldBox.destroyBody(body); // Borramos el objeto del mundo
+						if (oPlat.tipo == Medusa.TIPO_ROMPIBLE) // Si la medusa era de tipo rompible, llamamos a crear las piezas
 							crearPiezasPlataforma(oPlat);
-						Pools.free(oPlat);
+						Pools.free(oPlat); // Como medusa hereda de Pooleable, tambien llamamos al metodo free
 					}
-				}
-				else if (body.getUserData() instanceof Camarones) {
+				} else if (body.getUserData() instanceof Camarones) { // Si es instancia de camarones
 					Camarones oMon = (Camarones) body.getUserData();
-					if (oMon.state == Camarones.STATE_TAKEN) {
-						arrCamarones.removeValue(oMon, true);
-						oWorldBox.destroyBody(body);
-						Pools.free(oMon);
+					if (oMon.state == Camarones.STATE_TAKEN) { // Si el camarón lo hemos cogido
+						arrCamarones.removeValue(oMon, true); // Borramos del array el objeto
+						oWorldBox.destroyBody(body); // Borramos del mundo el objeto
+						Pools.free(oMon); // Como camaron hereda de Pooleable, tambien llamamos al metodo free
 					}
-				}
-				else if (body.getUserData() instanceof PiezaMedusa) {
+				} else if (body.getUserData() instanceof PiezaMedusa) { // Si es instancia de pieza medusa
 					PiezaMedusa oPiez = (PiezaMedusa) body.getUserData();
-					if (oPiez.state == PiezaMedusa.STATE_DESTROY) {
-						arrPiezasMedusas.removeValue(oPiez, true);
-						oWorldBox.destroyBody(body);
-						Pools.free(oPiez);
+					if (oPiez.state == PiezaMedusa.STATE_DESTROY) { // Si el estado de medusa esta en muerto / romper
+						arrPiezasMedusas.removeValue(oPiez, true); // Borramos el objeto del array
+						oWorldBox.destroyBody(body); // Borramos el objeto del mundo
+						Pools.free(oPiez); // Como medusa hereda de Pooleable, tambien llamamos al metodo free
 					}
-				}
-				else if (body.getUserData().equals("suelo")) {
-					if (oPer.position.y - 5.5f > body.getPosition().y || oPer.state == Dory.STATE_DEAD) {
-						oWorldBox.destroyBody(body);
+				} else if (body.getUserData().equals("suelo")) { // Si es el Suelo creado al principio del juego
+					if (oDory.position.y - 5.5f > body.getPosition().y || oDory.state == Dory.STATE_DEAD) { // Si dory ha muerto y está por debajo de la posicion indicado
+						oWorldBox.destroyBody(body); // Borramos el objeto
 					}
 				}
 			}
 		}
 	}
 
-	private void updatePersonaje(Body body, float delta, float acelX, Vector3 touchPositionWorldCoords) {
-		oPer.update(body, delta, acelX);
+	// Metodo update para Dory
+	private void updateDory(Body body, float delta, float acelX) {
+		oDory.update(body, delta, acelX); // Llamamos al update de Dory
 	}
 
-	private void updatePlataforma(Body body, float delta) {
-		Medusa obj = (Medusa) body.getUserData();
-		obj.update(delta);
-		if (oPer.position.y - 5.5f > obj.position.y) {
-			obj.setDestroy();
+	// Metodo update de Medusa
+	private void updateMedusa(Body body, float delta) {
+		Medusa obj = (Medusa) body.getUserData(); // Cogemos el objeto guardado en los datos
+		obj.update(delta); // llamamos al metodo update del modelo
+		if (oDory.position.y - 5.5f > obj.position.y) { // Si la posición de dory (+5.5) es mayor que la medusa
+			obj.setDestroy(); // Llamamos al metodo que cambia el estado de la medusa
 		}
 	}
 
-	private void updatePiezaPlataforma(Body body, float delta) {
-		PiezaMedusa obj = (PiezaMedusa) body.getUserData();
-		obj.update(delta, body);
-		if (oPer.position.y - 5.5f > obj.position.y) {
-			obj.setDestroy();
-		}
-
-	}
-
-	private void updateMoneda(Body body, float delta) {
-		Camarones obj = (Camarones) body.getUserData();
-		obj.update(delta);
-		if (oPer.position.y - 5.5f > obj.position.y) {
-			obj.take();
+	// Metodo update de las piezas de medusa
+	private void updatePiezaMedusa(Body body, float delta) {
+		PiezaMedusa obj = (PiezaMedusa) body.getUserData(); // Cogemos el objeto guardado en los datos
+		obj.update(delta, body);  // llamamos al metodo update del modelo
+		if (oDory.position.y - 5.5f > obj.position.y) { // Si la posición de dory (+5.5) es mayor que la de pieza medusa
+			obj.setDestroy(); // Llamamos al metodo que cambia el estado de la medusa
 		}
 
 	}
 
+	private void updateCamarones(Body body, float delta) {
+		Camarones obj = (Camarones) body.getUserData(); // Cogemos el objeto guardado en los datos
+		obj.update(delta); // llamamos al metodo update del modelo
+		if (oDory.position.y - 5.5f > obj.position.y) { // Si la posición de dory (+5.5) es mayor que la de pieza medusa
+			obj.take(); // Llamamos al metodo que cambia el estado del camaron
+		}
+
+	}
+
+	/**
+	 * Clase de Colisiones para la física que implementa el ContactListener
+	 */
 	class Colisiones implements ContactListener {
 
+		// Metodo que se ejecuta cuando hay una colisión
 		@Override
 		public void beginContact(Contact contact) {
-			Fixture a = contact.getFixtureA();
-			Fixture b = contact.getFixtureB();
+			Fixture a = contact.getFixtureA(); // Cogemos la fixtura de A
+			Fixture b = contact.getFixtureB(); // Cogemos la fixtura de B
 
-			if (a.getBody().getUserData() instanceof Dory)
-				beginContactPersonaje(a, b);
-			else if (b.getBody().getUserData() instanceof Dory)
-				beginContactPersonaje(b, a);
-
+			if (a.getBody().getUserData() instanceof Dory) // Si la Fixtura A es instancia de Dory
+				beginContactPersonaje(a, b); // Llamamos al metodo que contendrá la logica de la colisión
+			else if (b.getBody().getUserData() instanceof Dory) // Si la Fixtura B es instancia de Dory
+				beginContactPersonaje(b, a); // Llamamos al metodo que contendrá la logica de la colisión
 		}
 
-		private void beginContactPersonaje(Fixture fixPersonaje, Fixture fixOtraCosa) {
-			Object otraCosa = fixOtraCosa.getBody().getUserData();
+		// Metodo que contiene la logica de colisión
+		private void beginContactPersonaje(Fixture fixDory, Fixture fixOtroObjeto) {
+			Object otraCosa = fixOtroObjeto.getBody().getUserData(); // Cogemos el objeto que está en Data
 
+			// Si es el suelo que creamos al principio
 			if (otraCosa.equals("suelo")) {
-				oPer.jump();
+				oDory.jump(); // Llamamos al metodo Saltar
 
-				if (oPer.state == Dory.STATE_DEAD) {
-					state = STATE_GAMEOVER;
+				if (oDory.state == Dory.STATE_DEAD) { // Si Dory esta muerto
+					state = STATE_GAMEOVER; // Cambiamos el estado del juego a terminado
 				}
-			}
-			else if (otraCosa instanceof Medusa) {
-				Medusa plataforma = (Medusa) otraCosa;
+			} else if (otraCosa instanceof Medusa) { // Si es instancia de Medusa
+				Medusa medusa = (Medusa) otraCosa; // Hacemos un casting al Object
 
-				if (oPer.velocidad.y <= 0) {
-					if (plataforma.tipo != Medusa.TIPO_ROMPIBLE) {
-						oPer.jump();
-					} else {
-						plataforma.setDestroy();
+				if (oDory.velocidad.y <= 0) { // Si Dory está cayendo hacia bajo
+					if (medusa.tipo != Medusa.TIPO_ROMPIBLE) { // Si la medusa no es tipo rompible
+						oDory.jump(); // Llamamos al metodo que hace saltar a Dory
+					} else { // Si la medusa es de tipo rompible
+						medusa.setDestroy(); // Rompemos a la medusa
 					}
 				}
-
+			} else if (otraCosa instanceof Camarones) { // Si es instancia de Camarones
+				Camarones camarones = (Camarones) otraCosa; // Hacemos un casting al Objeto
+				camarones.take(); // Llamamos al metodo de coger el camaron
+				WorldGame.this.camarones++; // Añadimos a camarones 1
+				//oPer.jump(); // Si queremos que salte cuando cogemos un camaron, descomentamos
 			}
-			else if (otraCosa instanceof Camarones) {
-				Camarones camarones = (Camarones) otraCosa;
-				camarones.take();
-				WorldGame.this.camarones++;
-				//oPer.jump();
-			}
-
 		}
 
 		@Override
@@ -360,38 +397,37 @@ public class WorldGame {
 
 		}
 
+		// Metodo que se ejecuta antes de llamar a @beginContact
 		@Override
 		public void preSolve(Contact contact, Manifold oldManifold) {
+			// Cogemos ambas fixturas
 			Fixture a = contact.getFixtureA();
 			Fixture b = contact.getFixtureB();
 
+			// Dependiendo si son instancias de Dory, llamamos al metodo en un orden o en otro
 			if (a.getBody().getUserData() instanceof Dory)
 				preSolveHero(a, b, contact);
 			else if (b.getBody().getUserData() instanceof Dory)
 				preSolveHero(b, a, contact);
-
 		}
 
-		private void preSolveHero(Fixture fixPersonaje, Fixture otraCosa, Contact contact) {
-			Object oOtraCosa = otraCosa.getBody().getUserData();
+		private void preSolveHero(Fixture fixDory, Fixture fixOtraCosa, Contact contact) {
+			Object oOtraCosa = fixOtraCosa.getBody().getUserData(); // Creamos un objeto base a partir de la colisión
 
-			if (oOtraCosa instanceof Medusa) {
-				// Si va para arriba atraviesa la plataforma
+			if (oOtraCosa instanceof Medusa) { // Si es instancia de Medusa
 
+				// Si Dory va para arriba atraviesa la plataforma
 				Medusa obj = (Medusa) oOtraCosa;
 
-				float ponyY = fixPersonaje.getBody().getPosition().y - .30f;
-				float pisY = obj.position.y + Medusa.HEIGTH_NORMAL / 2f;
+				float posYDory = fixDory.getBody().getPosition().y - .30f; // Posición de Dory
+				float posYMedusa = obj.position.y + Medusa.HEIGTH_NORMAL / 2f; // Posición de Medusa + la altura
 
-				if (ponyY < pisY)
-					contact.setEnabled(false);
+				if (posYDory < posYMedusa) // Si la posición de dory es menor que la de la medusa
+					contact.setEnabled(false); // Quitamos el contact, para que no haya colisión
 
-				if (obj.tipo == Medusa.TIPO_NORMAL && oPer.state == Dory.STATE_DEAD) {
-					contact.setEnabled(false);
-				}
-
+				if (obj.tipo == Medusa.TIPO_NORMAL && oDory.state == Dory.STATE_DEAD)  // Si está Dory muerto
+					contact.setEnabled(false); // Quitamos el contact, para que no haya colisión
 			}
-
 		}
 
 		@Override

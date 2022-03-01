@@ -6,6 +6,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.juego.nemojump.screens.Screens;
 import com.juego.nemojump.utils.Assets;
+import com.juego.nemojump.utils.Settings;
 
 /*
  * Clase de Dory (Personaje que Controlamos)
@@ -101,7 +102,8 @@ public class Dory {
 	// Metodo de salto
 	public void jump() {
 		didJump = true; // Cambiar el boolean ha saltado a verdad
-		jumpSound.play(); // Reproducir sonido de salto
+		if (Settings.isSoundOn)
+			jumpSound.play(); // Reproducir sonido de salto
 	}
 
 	// Metodo de muerto

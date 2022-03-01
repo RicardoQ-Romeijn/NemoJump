@@ -11,7 +11,7 @@ import com.juego.nemojump.utils.Settings;
 import com.juego.nemojump.game.GameScreen;
 import com.juego.nemojump.game.WorldGame;
 
-public class VentanaGameover extends Ventana {
+public class VentanaGameover extends Ventanas {
 
 	// Creamos 2 Botones y el Mundo que necesitamos para Game Over
 	TextButton btMenu, btTryAgain;

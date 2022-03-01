@@ -13,6 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.juego.nemojump.MainSuperJumper;
+import com.juego.nemojump.utils.Assets;
 import com.juego.nemojump.utils.Settings;
 import com.juego.nemojump.game.GameScreen;
 
@@ -32,7 +33,7 @@ public abstract class Screens extends InputAdapter implements Screen {
 	public SpriteBatch batcher;
 	public Stage stage;
 
-	protected Music music;
+
 
 	public Screens(MainSuperJumper game) {
 		// Sacar las variables que vamos a utilizar a partir del juego
@@ -41,6 +42,8 @@ public abstract class Screens extends InputAdapter implements Screen {
 		this.batcher = game.batcher;
 
 		this.stage.clear();
+
+		Settings.playMusic();
 
 		// Crear la camara e centrar
 		oCam = new OrthographicCamera(SCREEN_WIDTH, SCREEN_HEIGHT);
@@ -109,11 +112,6 @@ public abstract class Screens extends InputAdapter implements Screen {
 
 	@Override
 	public void hide() {
-		if (music != null) {
-			music.stop();
-			music.dispose();
-			music = null;
-		}
 		Settings.save();
 	}
 

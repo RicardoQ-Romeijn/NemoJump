@@ -10,7 +10,7 @@ import com.juego.nemojump.utils.Assets;
 import com.juego.nemojump.game.GameScreen;
 import com.juego.nemojump.game.WorldGame;
 
-public class VentanaPause extends Ventana {
+public class VentanaPause extends Ventanas {
 
 	// Creamos 2 Botones y el Mundo que necesitamos para Game Over
 	TextButton btMenu, btResume;
@@ -24,11 +24,11 @@ public class VentanaPause extends Ventana {
 		this.oWorld = currentScreen.oWorld;
 
 		// Añadimos un Texto "Pause" a la ventana, que será el titulo
-		Label lbShop = new Label("Pause", Assets.labelStyle);
-		lbShop.setFontScale(1.5f);
-		lbShop.setAlignment(Align.center);
-		lbShop.setPosition(getWidth() / 2f - lbShop.getWidth() / 2f, 230);
-		this.addActor(lbShop);
+		Label lbPause = new Label("Pause", Assets.labelStyle);
+		lbPause.setFontScale(1.5f);
+		lbPause.setAlignment(Align.center);
+		lbPause.setPosition(getWidth() / 2f - lbPause.getWidth() / 2f, 230);
+		this.addActor(lbPause);
 
 		// Metodo que crea los botones
 		this.initButtons();
@@ -66,7 +66,7 @@ public class VentanaPause extends Ventana {
 			public void clicked(com.badlogic.gdx.scenes.scene2d.InputEvent event, float x, float y) {
 				hide();
 				screen.changeScreen(MainMenuScreen.class, game);
-			};
+			}
 		});
 
 		// Botton Volver a Intentar
@@ -79,33 +79,9 @@ public class VentanaPause extends Ventana {
 		btResume.addListener(new ClickListener() {
 			public void clicked(com.badlogic.gdx.scenes.scene2d.InputEvent event, float x, float y) {
 				hide();
-			};
+			}
 		});
 	}
-
-	/*private void initButtons() {
-		btMenu = new TextButton("Menu", Assets.textButtonStyle);
-		btMenu.pad(15);
-
-		screen.addListenerPress(btMenu);
-		btMenu.addListener(new ClickListener() {
-			public void clicked(com.badlogic.gdx.scenes.scene2d.InputEvent event, float x, float y) {
-				hide();
-				screen.changeScreen(MainMenuScreen.class, game);
-			};
-		});
-
-		btResume = new TextButton("Resume", Assets.textButtonStyle);
-		btResume.pad(15);
-
-		screen.addListenerPress(btResume);
-		btResume.addListener(new ClickListener() {
-			public void clicked(com.badlogic.gdx.scenes.scene2d.InputEvent event, float x, float y) {
-				hide();
-
-			};
-		});
-	}*/
 
 	@Override
 	public void show(Stage stage) {

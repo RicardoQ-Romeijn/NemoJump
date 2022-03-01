@@ -6,7 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.juego.nemojump.MainSuperJumper;
 import com.juego.nemojump.screens.Screens;
 
-public abstract class Ventana extends Group {
+public abstract class Ventanas extends Group {
 	// Variable global para la duracion de animacion
 	public static final float DURACION_ANIMATION = .2f;
 
@@ -18,7 +18,7 @@ public abstract class Ventana extends Group {
 	private boolean isVisible = false;
 
 	// Constructor con parametros, de pantalla actual, ancho alto de ventana y posicion que queremos la ventana
-	public Ventana(Screens currentScreen, float width, float height, float positionY) {
+	public Ventanas(Screens currentScreen, float width, float height, float positionY) {
 		screen = currentScreen;
 		game = currentScreen.game;
 		setSize(width, height);

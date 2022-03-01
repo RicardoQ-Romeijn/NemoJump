@@ -2,13 +2,16 @@ package com.juego.nemojump.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.juego.nemojump.utils.Assets;
 import com.juego.nemojump.MainSuperJumper;
 import com.juego.nemojump.utils.Settings;
@@ -19,6 +22,8 @@ public class MainMenuScreen extends Screens {
 	Image titulo;
 
 	TextButton btPlay;
+	Button  btMusic;
+	Button  btSound;
 	Label lbBestScore;
 	Label lbTotalCoins;
 	Label lbTotalGames;
@@ -36,6 +41,8 @@ public class MainMenuScreen extends Screens {
 			@Override
 			public void run() {
 				stage.addActor(btPlay);
+				stage.addActor(btMusic);
+				stage.addActor(btSound);
 				stage.addActor(lbBestScore);
 				stage.addActor(lbTotalCoins);
 				stage.addActor(lbTotalGames);
@@ -58,19 +65,51 @@ public class MainMenuScreen extends Screens {
 		});
 
 		/*
+		 * Creamos los botones de Musica y Audio para el juego
+		 */
+		btMusic = new Button(Settings.getMusicIcon());
+		btMusic.setPosition(SCREEN_WIDTH - 50, SCREEN_HEIGHT - 50);
+		btMusic.pad(10);
+		addListenerPress(btMusic);
+		btMusic.addListener(new ClickListener() {
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				Settings.changeMusic();
+				TextureRegionDrawable button = new TextureRegionDrawable(Settings.getMusicIcon());
+				Button.ButtonStyle textButtonStyle = new TextButton.TextButtonStyle(button, button, null, null);
+				btMusic.setStyle(textButtonStyle);
+				Settings.playMusic();
+			}
+		});
+
+		btSound = new Button(Settings.getSoundIcon());
+		btSound.setPosition(SCREEN_WIDTH - 50, SCREEN_HEIGHT - btMusic.getHeight() - 60);
+		btSound.pad(10);
+		addListenerPress(btSound);
+		btSound.addListener(new ClickListener() {
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				Settings.changeSound();
+				TextureRegionDrawable button = new TextureRegionDrawable(Settings.getSoundIcon());
+				Button.ButtonStyle textButtonStyle = new TextButton.TextButtonStyle(button, button, null, null);
+				btSound.setStyle(textButtonStyle);
+			}
+		});
+
+		/*
 		* Añadimos 3 Labels Distintos, uno para cada ajuste que guardamos
 		*/
-		lbBestScore = new Label("Best Score " + Settings.bestScore, Assets.labelStyle);
+		lbBestScore = new Label("Mejor Puntuación " + Settings.bestScore, Assets.labelStyle);
 		lbBestScore.setPosition(SCREEN_WIDTH / 2f - lbBestScore.getWidth() / 2f, 150);
 		lbBestScore.getColor().a = 0;
 		lbBestScore.addAction(Actions.alpha(1, .25f));
 
-		lbTotalCoins = new Label("Total Coins " + Settings.coinsTotal, Assets.labelStyle);
+		lbTotalCoins = new Label("Total Camarones " + Settings.camaronesTotal, Assets.labelStyle);
 		lbTotalCoins.setPosition(SCREEN_WIDTH / 2f - lbBestScore.getWidth() / 2f, 100);
 		lbTotalCoins.getColor().a = 0;
 		lbTotalCoins.addAction(Actions.alpha(1, .25f));
 
-		lbTotalGames = new Label("Times Played " + Settings.numeroVecesJugadas, Assets.labelStyle);
+		lbTotalGames = new Label("Veces Jugado " + Settings.numeroVecesJugadas, Assets.labelStyle);
 		lbTotalGames.setPosition(SCREEN_WIDTH / 2f - lbBestScore.getWidth() / 2f, 50);
 		lbTotalGames.getColor().a = 0;
 		lbTotalGames.addAction(Actions.alpha(1, .25f));

@@ -1,7 +1,12 @@
 package com.juego.nemojump.objetos;
 
+import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Pool.Poolable;
+import com.juego.nemojump.utils.Assets;
 
 /*
  * Clase de Medusa
@@ -35,17 +40,16 @@ public class Medusa implements Poolable {
 	}
 
 	// Cuando llamamos a init, va a hacer lo siguiente
-	public void init(float x, float y, int tipo) {
+	public void init(float x, float y) {
 		position.set(x, y); // pone la posicion
 
 		// El tipo introducido, será un rango desde 1 a 10,
 		// Significa que 1 de cada 10 va a ser de una medusa "falsa"
 		// (Medusa la que no da impulso)
-		if (tipo == 1) {
+		if (MathUtils.random(20) == 1)
 			this.tipo = TIPO_ROMPIBLE;
-		} else {
+		else
 			this.tipo = TIPO_NORMAL;
-		}
 
 		// Estado "vivo" o normal, e decir el statetime (delta) es 0
 		state = STATE_NORMAL;
@@ -55,6 +59,10 @@ public class Medusa implements Poolable {
 	// Cuando llamamos a update, sobreescribe el estatetime que es nuestro delta
 	public void update(float delta) {
 		stateTime += delta;
+	}
+
+	public void jumped() {
+
 	}
 
 	// Cuando llamamos a este metodo, queremos borrar la plataforma

@@ -61,7 +61,7 @@ public class Camarones implements Poolable {
 	}
 
 	// Metodo que crea la moneda
-	public static void createMoneda(World worldBox, Array<Camarones> arrCamarones, float y) {
+	public static void createCamaron(World worldBox, Array<Camarones> arrCamarones, float y) {
 		// Sacamos el X aleatoriamente entre el tamaño del mundo, mas con el tamaño del camaron partido por 2
 		float x = MathUtils.random(Screens.WORLD_WIDTH) + WIDTH / 2f;
 

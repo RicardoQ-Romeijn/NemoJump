@@ -2,6 +2,7 @@ package com.juego.nemojump.utils;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.*;
@@ -17,20 +18,15 @@ public class Assets {
 	public static AtlasRegion fondo;
 	public static TextureRegionDrawable titulo;
 
-	/*
-	 * Dory
-	 */
+	// Dory
 	public static AtlasRegion dory;
 	public static final String doryJumpSound = "data/boing.mp3";
+	public static final String bgmusic = "data/bgmusic.mp3";
 
-	/*
-	* Camarones
-	*/
+	// Camarones
 	public static AtlasRegion camarones;
 
-	/*
-	* Jellyfish
-	*/
+	// Jellyfish
 	public static AtlasRegion jellyfishMain;
 	public static AtlasRegion jellyfishMainSquished;
 	public static AtlasRegion jellyfishMainExpanded;
@@ -45,25 +41,23 @@ public class Assets {
 	public static AtlasRegion jellyfishBlue;
 	public static AtlasRegion jellyfishBlueSquished;
 
-	/*
-	* Boton de Pausa
-	*/
+	// Boton de Pausa
 	public static TextureRegionDrawable btPause;
 
-	/*
-	* Fonts
-	*/
+	// Botones de Musica y Audio
+	public static  TextureRegionDrawable btMusicOn;
+	public static  TextureRegionDrawable btMusicOff;
+	public static  TextureRegionDrawable btSoundOn;
+	public static  TextureRegionDrawable btSoundOff;
+
+	// Fonts
 	public static LabelStyle labelStyle;
 	public static TextButtonStyle textButtonStyle;
 
-	/*
-	* Asset Manager
-	*/
+	// Asset Manager
 	public static AssetManager assetManager;
 
-	/*
-	* Cargar todos los assets necesarios para el juego
-	*/
+	// Cargar todos los assets necesarios para el juego
 	public static void load() {
 		// Cargar el Texture Atlas del Juego
 		TextureAtlas nemoAtlas = new TextureAtlas(Gdx.files.internal("data/Jellyfish.atlas"));
@@ -75,15 +69,17 @@ public class Assets {
 		fondo = nemoAtlas.findRegion("background");
 		titulo = new TextureRegionDrawable(nemoAtlas.findRegion("title"));
 
-		/*
-		 * Personaje
-		 */
+		// Botones de Musica y Audio
+		btMusicOn = new TextureRegionDrawable(nemoAtlas.findRegion("btmusic_on"));
+		btMusicOff = new TextureRegionDrawable(nemoAtlas.findRegion("btmusic_off"));
+		btSoundOn = new TextureRegionDrawable(nemoAtlas.findRegion("btspeaker_on"));
+		btSoundOff = new TextureRegionDrawable(nemoAtlas.findRegion("btspeaker_off"));
+
+		// Personaje
 		dory = nemoAtlas.findRegion("dory");
 		camarones = nemoAtlas.findRegion("corepod");
 
-		/*
-		 * Jellyfish
-		 */
+		// Jellyfish
 		jellyfishMain = nemoAtlas.findRegion("jelly-2");
 		jellyfishMainExpanded = nemoAtlas.findRegion("jelly-1");
 		jellyfishMainSquished = nemoAtlas.findRegion("jelly-3");
@@ -104,22 +100,24 @@ public class Assets {
 		// Utilizamos el Asset Manager para cargar los sonidos
 		assetManager = new AssetManager();
 		assetManager.load(doryJumpSound, Sound.class);
+		assetManager.load(bgmusic, Music.class);
 		assetManager.finishLoading();
 	}
 
-	/*
-	 * Cargar los fonts
-	 */
+	// Cargar los fonts
 	public static void loadStyles(TextureAtlas atlas) {
 		labelStyle = new LabelStyle(font, Color.BLACK);
 		TextureRegionDrawable button = new TextureRegionDrawable(atlas.findRegion("button"));
 		textButtonStyle = new TextButtonStyle(button, button, null, font);
 	}
 
-	/*
-	* Devolver el Sonido de Saltar
-	*/
+	// Devolver el Sonido de Saltar
 	public static Sound getJumpSound(){
 		return assetManager.get(doryJumpSound);
+	}
+
+	// Devolver la musica de fondo
+	public static Music getBgMusic(){
+		return assetManager.get(bgmusic);
 	}
 }
